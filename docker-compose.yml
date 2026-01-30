@@ -1,0 +1,40 @@
+# Use postgres/example user/password credentials
+#version: '3.9'
+
+services:
+
+  app:
+    build: .
+    environment:
+      DATABASE_ENGINE: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/postgres
+    ports:
+      - 8002:80
+    depends_on:
+      - db
+#        condition: service_healthy   # ← Самое важное! Ждём реальной готовности БД
+
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+#    healthcheck: # ← Это заставит depends_on работать правильно
+#      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+#      interval: 3s
+#      timeout: 5s
+#      retries: 10
+#      start_period: 5s             # даём БД немного времени на старт
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+#volumes:
+#  db-data:
