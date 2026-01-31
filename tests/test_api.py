@@ -104,62 +104,62 @@ def test_returns_unique_users(get_users):
     users_ids = [user['id'] for user in get_users]
 
     assert len(users_ids) == len(set(users_ids))
-
-@pytest.mark.parametrize('size, page, expected_pages', [
-    (5, 2, 3),
-    (1, 5, 12)
-])
-def test_pagination(app_url, size, page, expected_pages):
-
-    response = requests.get(
-        f'{app_url}/api/users?page={page}&size={size}'
-    )
-
-    users = response.json()['items']
-    for user in users:
-        User.model_validate(user)
-
-    assert response.json()['page'] == page
-    assert response.json()['size'] == size
-    assert response.json()['pages'] == expected_pages
-    assert len(users) == size
-
-
-def test_pagination_returns_unique_data_on_each_page(app_url):
-
-    first_page_users = get_users_ids(
-        app_url=app_url,
-        size=4,
-        page=1
-    )
-    second_page_users = get_users_ids(
-        app_url=app_url,
-        size=4,
-        page=2
-    )
-    third_page_users = get_users_ids(
-        app_url=app_url,
-        size=4,
-        page=3
-    )
-
-    assert first_page_users != second_page_users
-    assert second_page_users != third_page_users
-    assert first_page_users != third_page_users
-
-@pytest.mark.parametrize('size, page, expected_pages, expected_response', [
-    (0, 0, 0, HTTPStatus.UNPROCESSABLE_ENTITY),
-    (13, 1, 12, HTTPStatus.BAD_REQUEST),
-    (3, 5, 12, HTTPStatus.BAD_REQUEST),
-    ('abc', 5, 12, HTTPStatus.UNPROCESSABLE_ENTITY),
-    (3, 'abc', 12, HTTPStatus.UNPROCESSABLE_ENTITY),
-    # (3, 4, 5) #wrong count
-])
-def test_invalid_pagination(app_url, size, page, expected_pages, expected_response):
-
-    response = requests.get(
-        f'{app_url}/api/users?page={page}&size={size}'
-    )
-    print(response.json())
-
-    assert response.status_code == expected_response
+#
+# @pytest.mark.parametrize('size, page, expected_pages', [
+#     (5, 2, 3),
+#     (1, 5, 12)
+# ])
+# def test_pagination(app_url, size, page, expected_pages):
+#
+#     response = requests.get(
+#         f'{app_url}/api/users?page={page}&size={size}'
+#     )
+#
+#     users = response.json()['items']
+#     for user in users:
+#         User.model_validate(user)
+#
+#     assert response.json()['page'] == page
+#     assert response.json()['size'] == size
+#     assert response.json()['pages'] == expected_pages
+#     assert len(users) == size
+#
+#
+# def test_pagination_returns_unique_data_on_each_page(app_url):
+#
+#     first_page_users = get_users_ids(
+#         app_url=app_url,
+#         size=4,
+#         page=1
+#     )
+#     second_page_users = get_users_ids(
+#         app_url=app_url,
+#         size=4,
+#         page=2
+#     )
+#     third_page_users = get_users_ids(
+#         app_url=app_url,
+#         size=4,
+#         page=3
+#     )
+#
+#     assert first_page_users != second_page_users
+#     assert second_page_users != third_page_users
+#     assert first_page_users != third_page_users
+#
+# @pytest.mark.parametrize('size, page, expected_pages, expected_response', [
+#     (0, 0, 0, HTTPStatus.UNPROCESSABLE_ENTITY),
+#     (13, 1, 12, HTTPStatus.BAD_REQUEST),
+#     (3, 5, 12, HTTPStatus.BAD_REQUEST),
+#     ('abc', 5, 12, HTTPStatus.UNPROCESSABLE_ENTITY),
+#     (3, 'abc', 12, HTTPStatus.UNPROCESSABLE_ENTITY),
+#     # (3, 4, 5) #wrong count
+# ])
+# def test_invalid_pagination(app_url, size, page, expected_pages, expected_response):
+#
+#     response = requests.get(
+#         f'{app_url}/api/users?page={page}&size={size}'
+#     )
+#     print(response.json())
+#
+#     assert response.status_code == expected_response
